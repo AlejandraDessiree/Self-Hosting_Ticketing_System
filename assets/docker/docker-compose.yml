@@ -1,0 +1,32 @@
+services:
+  osticket:
+    image: devinsolutions/osticket:latest
+    container_name: osticket-app
+    depends_on:
+      - mariadb
+    ports:
+      - "8080:80"
+    environment:
+      - MYSQL_HOST=mariadb
+      - MYSQL_DATABASE=osticket
+      - MYSQL_USER=osticket
+      - MYSQL_PASSWORD=osticket-secret-pw
+    volumes:
+      - osticket-data:/var/www/html
+    restart: unless-stopped
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: osticket-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root-secret-pw
+      - MYSQL_DATABASE=osticket
+      - MYSQL_USER=osticket
+      - MYSQL_PASSWORD=osticket-secret-pw
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  osticket-data:
+  mariadb-data:
