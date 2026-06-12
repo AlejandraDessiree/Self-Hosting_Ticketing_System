@@ -7,25 +7,39 @@ services:
     ports:
       - "8080:80"
     environment:
-      - MYSQL_HOST=mariadb
-      - MYSQL_DATABASE=osticket
-      - MYSQL_USER=osticket
-      - MYSQL_PASSWORD=osticket-secret-pw
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - ADMIN_USERNAME=ostadmin
+      - ADMIN_PASSWORD=Admin1
     volumes:
       - osticket-data:/var/www/html
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   mariadb:
     image: mariadb:10.11
     container_name: osticket-db
     environment:
-      - MYSQL_ROOT_PASSWORD=root-secret-pw
-      - MYSQL_DATABASE=osticket
-      - MYSQL_USER=osticket
-      - MYSQL_PASSWORD=osticket-secret-pw
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - mariadb-data:/var/lib/mysql
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   osticket-data:
